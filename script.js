@@ -231,6 +231,36 @@ function hasCycle() {
   return false;
 }
 
+//deadlock backend
+
+async function detectDeadlockFromBackend() {
+  const output = document.getElementById("output");
+  output.textContent = "Running simulation on server...";
+
+  try {
+    const response = await fetch("https://YOUR_RAILWAY_URL/simulate");
+    const data = await response.json();
+
+    edges = [];
+    graphAdj = {};
+    priorities = {};
+
+    generateGraphFromJSON(data); // You will need to write this function
+
+    if (hasCycle()) {
+      deadlockDetected = true;
+      output.textContent = "🔴 Deadlock detected!\nGraph edges:\n" + edges.join("\n");
+    } else {
+      deadlockDetected = false;
+      output.textContent = "✅ No deadlock detected.\nGraph edges:\n" + edges.join("\n");
+    }
+
+  } catch (err) {
+    output.textContent = "Error fetching simulation: " + err;
+  }
+}
+
+
 // ---------- MAIN DEADLOCK DETECTION ----------
 function detectDeadlock() {
   const p = parseInt(document.getElementById("numProcesses").value);
